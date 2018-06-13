@@ -14,7 +14,7 @@ export class UserService {
   }
   getUsers() {
     return this._http.get(this.myAppUrl + 'api/User/Index')
-      .map((response: Response) => response.json())
+      .map((response: Response) => response)
       .catch(this.errorHandler);
   }
   getUserById(id: number) {

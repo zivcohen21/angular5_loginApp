@@ -15,8 +15,9 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { AuthenticationService } from './services/authentication.service';
 import { UserService } from './services/userservice.service';
 //import { JwtInterceptor } from './helpers';
+import { NgxPaginationModule } from 'ngx-pagination';
 
-//import { Auth } from './auth';
+import { Auth } from './auth';
 
 @NgModule({
   declarations: [
@@ -32,8 +33,9 @@ import { UserService } from './services/userservice.service';
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
+    NgxPaginationModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
+      { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [Auth] },
       { path: 'login', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
       //{
@@ -52,7 +54,7 @@ import { UserService } from './services/userservice.service';
     ])
   ],
   providers: [
-    //Auth,
+    Auth,
     //AlertService,
     AuthenticationService,
     UserService

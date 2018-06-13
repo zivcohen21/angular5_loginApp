@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '../services/userservice.service';
+import { AuthenticationService } from '../services/authentication.service';
+import { Md5 } from 'ts-md5';
+
 
 @Component({
   selector: 'app-register',
@@ -12,7 +15,8 @@ export class RegisterComponent implements OnInit {
   loading = false;
 
   constructor(private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private authenticationService: AuthenticationService
   ) { }
 
   ngOnInit() {
@@ -20,7 +24,9 @@ export class RegisterComponent implements OnInit {
 
   register() {
     this.loading = true;
-
+    const saltRounds = 10;
+    const userPassword = this.model.password;
+    this.model.password = Md5.hashStr(userPassword);
     this.userService.saveUser(this.model)
       .subscribe(
       data => {

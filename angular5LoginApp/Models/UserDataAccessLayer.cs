@@ -160,7 +160,7 @@ namespace angular5LoginApp.Models
                         user.FirstName = rdr["FirstName"].ToString();
                         user.LastName = rdr["LastName"].ToString();
                         user.Username = rdr["Username"].ToString();
-                        user.Password = rdr["Password"].ToString();
+                        user.Password = rdr["Password"].ToString();                     
                     }
                 }
                 
