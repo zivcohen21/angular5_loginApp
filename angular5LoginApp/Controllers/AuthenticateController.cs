@@ -18,7 +18,7 @@ namespace angular5LoginApp.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new string[] { "value13", "value23" };
         }
 
         // GET api/<controller>/5

@@ -100,7 +100,7 @@ namespace angular5LoginApp.Models
                 User user = new User();
                 using (MySqlConnection con = new MySqlConnection(connectionString))
                 {
-                    string sqlQuery = "SELECT * FROM tblUser WHERE UserId= " + id;
+                    string sqlQuery = "SELECT * FROM tbluser WHERE UserId= " + id;
                     MySqlCommand cmd = new MySqlCommand(sqlQuery, con);
                     con.Open();
                     MySqlDataReader rdr = cmd.ExecuteReader();
@@ -149,10 +149,11 @@ namespace angular5LoginApp.Models
                 User user =  new User();
                 using (MySqlConnection con = new MySqlConnection(connectionString))
                 {
-                    string sqlQuery = "SELECT * FROM tblUser WHERE Password= " + authData.Password + " AND Username= " + authData.Username;
+                    Console.Write(authData);
+                    string sqlQuery = "SELECT * FROM tbluser WHERE Password=" + authData.password + " AND Username='" + authData.username + "'";
                     MySqlCommand cmd = new MySqlCommand(sqlQuery, con);
                     con.Open();
-                    MySqlDataReader rdr = cmd.ExecuteReader();
+                    MySqlDataReader rdr = cmd.ExecuteReader();               
                     while (rdr.Read())
                     {
                         user.UserID = Convert.ToInt32(rdr["UserId"]);
@@ -162,6 +163,7 @@ namespace angular5LoginApp.Models
                         user.Password = rdr["Password"].ToString();
                     }
                 }
+                
                 return user;
             }
             catch
