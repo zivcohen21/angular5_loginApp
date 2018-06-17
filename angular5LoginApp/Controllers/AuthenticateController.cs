@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using angular5LoginApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -30,7 +31,8 @@ namespace angular5LoginApp.Controllers
 
         // POST api/<controller>
         [HttpPost]
-        public User Post([FromBody]AuthData authData)
+        [Authorize]
+        public Result Post([FromBody]AuthData authData)
         {
             return objuser.Auth(authData);
         }

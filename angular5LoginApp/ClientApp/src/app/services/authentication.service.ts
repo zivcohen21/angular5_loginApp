@@ -11,13 +11,14 @@ export class AuthenticationService {
 
   login(username: string, password: string) {
     return this.http.post<any>('/api/authenticate', { username: username, password: password })
-      .map(user => {
+      .map(data => {
+        console.info(data);
         // login successful if there's a jwt token in the response
-        if (user) {
+        if (data.user && data.user.token) {
           // store user details and jwt token in local storage to keep user logged in between page refreshes
-          localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
         }
-        return user;
+        return data;
       });
   }
 

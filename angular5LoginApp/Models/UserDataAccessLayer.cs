@@ -5,6 +5,9 @@ using System.Data.SqlClient;
 using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace angular5LoginApp.Models
 {
@@ -31,7 +34,6 @@ namespace angular5LoginApp.Models
                         user.FirstName = rdr["FirstName"].ToString();
                         user.LastName = rdr["LastName"].ToString();
                         user.Username = rdr["Username"].ToString();
-                        user.Password = rdr["Password"].ToString();
                         lstuser.Add(user);
                     }
                     con.Close();
@@ -48,6 +50,7 @@ namespace angular5LoginApp.Models
         {
             try
             {
+                string hashedPassword = hashingPassword(user.Password);
                 using (MySqlConnection con = new MySqlConnection(connectionString))
                 {
                     MySqlCommand cmd = new MySqlCommand("spAddUser", con);
@@ -55,7 +58,7 @@ namespace angular5LoginApp.Models
                     cmd.Parameters.AddWithValue("firstName", user.FirstName);
                     cmd.Parameters.AddWithValue("lastName", user.LastName);
                     cmd.Parameters.AddWithValue("username", user.Username);
-                    cmd.Parameters.AddWithValue("password", user.Password);
+                    cmd.Parameters.AddWithValue("password", hashedPassword);
                     con.Open();
                     cmd.ExecuteNonQuery();
                     con.Close();
@@ -72,6 +75,7 @@ namespace angular5LoginApp.Models
         {
             try
             {
+                string hashedPassword = hashingPassword(user.Password);
                 using (MySqlConnection con = new MySqlConnection(connectionString))
                 {
                     MySqlCommand cmd = new MySqlCommand("spUpdateUser", con);
@@ -80,7 +84,7 @@ namespace angular5LoginApp.Models
                     cmd.Parameters.AddWithValue("firstName", user.FirstName);
                     cmd.Parameters.AddWithValue("lastName", user.LastName);
                     cmd.Parameters.AddWithValue("username", user.Username);
-                    cmd.Parameters.AddWithValue("password", user.Password);
+                    cmd.Parameters.AddWithValue("password", hashedPassword);
                     con.Open();
                     cmd.ExecuteNonQuery();
                     con.Close();
@@ -110,7 +114,6 @@ namespace angular5LoginApp.Models
                         user.FirstName = rdr["FirstName"].ToString();
                         user.LastName = rdr["LastName"].ToString();
                         user.Username = rdr["Username"].ToString();
-                        user.Password = rdr["Password"].ToString();
                     }
                 }
                 return user;
@@ -142,34 +145,62 @@ namespace angular5LoginApp.Models
             }
         }
 
-        public User Auth(AuthData authData)
+        public Result Auth(AuthData authData)
         {
             try
             {
+
+                string hashedPassword = hashingPassword(authData.password);
+
+                Result result = new Result();
                 User user =  new User();
                 using (MySqlConnection con = new MySqlConnection(connectionString))
                 {
                     Console.Write(authData);
-                    string sqlQuery = "SELECT * FROM tbluser WHERE Password=" + authData.password + " AND Username='" + authData.username + "'";
+                    string sqlQuery = "SELECT * FROM tbluser WHERE Username='" + authData.username + "'";
                     MySqlCommand cmd = new MySqlCommand(sqlQuery, con);
                     con.Open();
                     MySqlDataReader rdr = cmd.ExecuteReader();               
                     while (rdr.Read())
                     {
-                        user.UserID = Convert.ToInt32(rdr["UserId"]);
-                        user.FirstName = rdr["FirstName"].ToString();
-                        user.LastName = rdr["LastName"].ToString();
-                        user.Username = rdr["Username"].ToString();
-                        user.Password = rdr["Password"].ToString();                     
+                        String a = rdr["Password"].ToString();
+                        if (KeyDerivation.Equals(hashedPassword, a))
+                        {
+                            user.UserID = Convert.ToInt32(rdr["UserId"]);
+                            user.FirstName = rdr["FirstName"].ToString();
+                            user.LastName = rdr["LastName"].ToString();
+                            user.Username = rdr["Username"].ToString();
+
+                            result.User = user;
+                            return result;
+                        }                        
                     }
                 }
+                result.Message = "Invalid Username or Password";    
                 
-                return user;
+                return result;
+                
             }
             catch
             {
                 throw;
             }
+        }
+
+        public string hashingPassword(string password)
+        {
+            byte[] salt = new byte[128 / 8];
+            //using (var rng = RandomNumberGenerator.Create())
+            //{
+            //    rng.GetBytes(salt);
+            //}
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+            password: password,
+            salt: salt,
+            prf: KeyDerivationPrf.HMACSHA1,
+            iterationCount: 10000,
+            numBytesRequested: 256 / 8));            
+            return hashed;
         }
     }
 }

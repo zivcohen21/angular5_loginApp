@@ -14,7 +14,7 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 //import { AlertService } from './services/alert.service';
 import { AuthenticationService } from './services/authentication.service';
 import { UserService } from './services/userservice.service';
-//import { JwtInterceptor } from './helpers';
+import { JwtInterceptor } from './jwt.interceptor';
 import { NgxPaginationModule } from 'ngx-pagination';
 
 import { Auth } from './auth';
@@ -57,12 +57,12 @@ import { Auth } from './auth';
     Auth,
     //AlertService,
     AuthenticationService,
-    UserService
-    //{
-    //  provide: HTTP_INTERCEPTORS,
-    //  useClass: JwtInterceptor,
-    //  multi: true
-    //}
+    UserService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

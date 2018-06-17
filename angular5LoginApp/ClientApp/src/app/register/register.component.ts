@@ -24,9 +24,7 @@ export class RegisterComponent implements OnInit {
 
   register() {
     this.loading = true;
-    const saltRounds = 10;
-    const userPassword = this.model.password;
-    this.model.password = Md5.hashStr(userPassword);
+    console.info(this.model);
     this.userService.saveUser(this.model)
       .subscribe(
       data => {
