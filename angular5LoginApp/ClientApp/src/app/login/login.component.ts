@@ -27,6 +27,8 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.loading = true;
+    let tempPassword = this.model.password;
+    this.model.password = Md5.hashStr(tempPassword);
     this.authenticationService.login(this.model.username, this.model.password)
       .subscribe(
       data => {

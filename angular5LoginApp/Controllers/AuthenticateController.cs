@@ -31,7 +31,6 @@ namespace angular5LoginApp.Controllers
 
         // POST api/<controller>
         [HttpPost]
-        [Authorize]
         public Result Post([FromBody]AuthData authData)
         {
             return objuser.Auth(authData);

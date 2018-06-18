@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../services/userservice.service';
 import { AuthenticationService } from '../services/authentication.service';
 import { Md5 } from 'ts-md5';
+import { pbkdf2 } from 'pbkdf2';
 
 
 @Component({
@@ -24,7 +25,9 @@ export class RegisterComponent implements OnInit {
 
   register() {
     this.loading = true;
-    console.info(this.model);
+    console.info(this.model);    
+    let tempPassword = this.model.password;
+    this.model.password = Md5.hashStr(tempPassword);
     this.userService.saveUser(this.model)
       .subscribe(
       data => {
